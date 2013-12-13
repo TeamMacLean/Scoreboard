@@ -7,6 +7,10 @@ import (
 	"labix.org/v2/mgo"
 )
 
+const (
+	dbName = "credit"
+)
+
 type Wish struct {
 	Name        string `form:"name"`
 	Description string `form:"description"`
@@ -21,7 +25,7 @@ func DB() martini.Handler {
 
 	return func(c martini.Context) {
 		s := session.Clone()
-		c.Map(s.DB("advent"))
+		c.Map(s.DB(dbName))
 		defer s.Close()
 		c.Next()
 	}
@@ -39,11 +43,15 @@ func main() {
 	m.Use(render.Renderer())
 	m.Use(DB())
 
-	m.Get("/wishes", func(r render.Render, db *mgo.Database) {
+	m.Get("/", func(r render.Render, db *mgo.Database) {
+		r.HTML(200, "index", GetAll(db))
+	})
+
+	m.Get("/badges", func(r render.Render, db *mgo.Database) {
 		r.HTML(200, "list", GetAll(db))
 	})
 
-	m.Post("/wishes", binding.Form(Wish{}), func(wish Wish, r render.Render, db *mgo.Database) {
+	m.Post("/badges", binding.Form(Wish{}), func(wish Wish, r render.Render, db *mgo.Database) {
 		db.C("wishes").Insert(wish)
 		r.HTML(200, "list", GetAll(db))
 	})
