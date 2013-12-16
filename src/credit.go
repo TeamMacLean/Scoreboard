@@ -19,46 +19,58 @@ IDEA:
 */
 
 import (
+	"encoding/json"
+	"fmt"
 	"github.com/codegangsta/martini"
-	// "github.com/codegangsta/martini-contrib/binding"
 	"github.com/codegangsta/martini-contrib/render"
+	"io/ioutil"
 	"labix.org/v2/mgo"
+	"labix.org/v2/mgo/bson"
+	"net/http"
+	"os"
+	"strconv"
 )
 
 const (
-	dbName = "credit"
+	dbName     = "credit"
+	cardsTable = "cards"
 )
 
-type Badge struct {
-	Name  string
-	Badge int
+var (
+	badges []Badge
+	config Config
+)
+
+type Config struct {
+	Authorization string
+	BaseUrl       string
+	/*
+		Username string
+		Password string
+		"Basic "+base64(email + ":" + password)
+	*/
 }
 
-type User struct {
-	Name  string
-	Email string
+type Badge struct {
+	ID       int
+	Name     string
+	Badge    int
+	Evidence string
 }
 
 type Card struct {
-	User     int
+	Email    string
 	Badge    int
 	Points   int
 	Required int
 	Given    bool
 }
 
-// type Wish struct {
-// 	Name        string `form:"name"`
-// 	Description string `form:"description"`
-// }
-
-// DB Returns a martini.Handler
 func DB() martini.Handler {
 	session, err := mgo.Dial("mongodb://localhost")
 	if err != nil {
 		panic(err)
 	}
-
 	return func(c martini.Context) {
 		s := session.Clone()
 		c.Map(s.DB(dbName))
@@ -67,40 +79,128 @@ func DB() martini.Handler {
 	}
 }
 
+func GenerateBadge() {
+	/*
+		required: recipient, evidence, badgeId
+	*/
+}
+
+func UpdateCard(db *mgo.Database, email string, badge int) Card {
+	card := CardByEmailAndBadge(db, email, badge)
+
+	if len(card.Email) < 1 {
+		err := db.C(cardsTable).Insert(&Card{email, badge, 0, 100, false})
+		if err != nil {
+			panic(err)
+		}
+	}
+
+	if card.Given {
+	} else {
+		query := bson.M{"email": email, "badge": badge}
+		change := bson.M{"$set": bson.M{"points": card.Points + 1}}
+		err := db.C(cardsTable).Update(query, change)
+		if err != nil {
+			panic(err)
+		}
+		card = CardByEmailAndBadge(db, email, badge)
+		if card.Points == card.Required {
+			query := bson.M{"email": email, "badge": badge}
+			change := bson.M{"$set": bson.M{"given": true}}
+			err := db.C(cardsTable).Update(query, change)
+			if err != nil {
+				panic(err)
+			}
+		}
+	}
+
+	return CardByEmailAndBadge(db, email, badge)
+}
+
+func CardByEmailAndBadge(db *mgo.Database, email string, badge int) Card {
+	card := Card{}
+	db.C(cardsTable).Find(bson.M{"email": email, "badge": badge}).One(&card)
+	return card
+}
+
 func GetAllCards(db *mgo.Database) []Card {
 	var cards []Card
-	db.C("cards").Find(nil).All(&cards)
+	err := db.C(cardsTable).Find(nil).All(&cards)
+	if err != nil {
+		panic(err)
+	}
 	return cards
 }
 
-// GetCardsByUser returns all cards for a given user
-func GetCardsByUser(db *mgo.Database, user string) []Card {
+func GetAllBadges() []Badge {
+	return badges
+}
+
+func GetCardsByEmail(db *mgo.Database, email string) []Card {
 	var cards []Card
-	db.C("cards").Find(nil).All(&cards)
+	err := db.C(cardsTable).Find(bson.M{"Email": email}).All(&cards)
+	if err != nil {
+		panic(err)
+	}
 	return cards
+}
+
+func Auth(res http.ResponseWriter, req *http.Request) {
+	if req.Header.Get("X-API-KEY") != "secret123" {
+		res.WriteHeader(http.StatusUnauthorized)
+	}
+}
+
+func LoadConfig() {
+	file, err := ioutil.ReadFile("./config.json")
+	if err != nil {
+		fmt.Printf("File error: %v\n", err)
+		os.Exit(1)
+	}
+	json.Unmarshal(file, &config)
+}
+
+func LoadBadges() {
+	file, err := ioutil.ReadFile("./badges.json")
+	if err != nil {
+		fmt.Printf("File error: %v\n", err)
+		os.Exit(1)
+	}
+	json.Unmarshal(file, &badges)
 }
 
 func main() {
+
+	LoadConfig()
+	LoadBadges()
+
 	m := martini.Classic()
 	m.Use(render.Renderer())
+	// m.Use(Auth)
 	m.Use(DB())
 
-	//list cards
-	m.Get("/cards", func(r render.Render, db *mgo.Database) {
-		r.HTML(200, "list", GetAllCards(db))
+	m.Get("/", func() string {
+		return "Merry Christmas!"
 	})
 
-	//list cards by user(email)
-	m.Get("/cards/email/:email", func(params martini.Params, r render.Render, db *mgo.Database) {
-		// card := Card{1, 1, 1, 1, false}
-		// db.C("cards").Insert(card)
-		r.HTML(200, "list", GetCardsByUser(db, params["email"]))
+	m.Get("/badges", func(r render.Render) {
+		r.JSON(200, GetAllBadges())
 	})
 
-	// m.Post("/vards", binding.Form(Wish{}), func(wish Wish, r render.Render, db *mgo.Database) {
-	// 	db.C("wishes").Insert(wish)
-	// 	r.HTML(200, "list", GetAll(db))
-	// })
+	m.Get("/cards", func(db *mgo.Database, r render.Render) {
+		r.JSON(200, GetAllCards(db))
+	})
 
+	m.Get("/cards/update/:email/:badge", func(params martini.Params, db *mgo.Database, r render.Render) {
+
+		email := params["email"]
+		badge := params["badge"]
+		i, err := strconv.Atoi(badge)
+		if err != nil {
+			panic(err)
+		}
+		out := UpdateCard(db, email, i)
+		r.JSON(200, out)
+	})
 	m.Run()
 }
