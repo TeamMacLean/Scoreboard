@@ -119,10 +119,11 @@ func UpdateCard(db *mgo.Database, email string, badge int) Card {
 		if err != nil {
 			panic(err)
 		}
-		card = CardByEmailAndBadge(db, email, badge)
+		card.Points += 1
 		if card.Points == currentBadge.PointsRequired {
 			query := bson.M{"email": email, "badge": badge}
 			change := bson.M{"$set": bson.M{"given": true}}
+			card.Given = true
 			err := db.C(cardsTable).Update(query, change)
 			if err != nil {
 				panic(err)
@@ -130,7 +131,7 @@ func UpdateCard(db *mgo.Database, email string, badge int) Card {
 		}
 	}
 
-	return CardByEmailAndBadge(db, email, badge)
+	return card
 }
 
 func CardByEmailAndBadge(db *mgo.Database, email string, badge int) Card {
