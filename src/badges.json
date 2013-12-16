@@ -1,4 +1,7 @@
-[{"ID":1,"Name":"wookoouk@gmail.com","Badge":"test", "Evidence":"test.com"},
-{"ID":2,"Name":"wookoouk@gmail.com","Badge":"test", "Evidence":"test.com"},
-{"ID":3,"Name":"wookoouk@gmail.com","Badge":"test", "Evidence":"test.com"},
-{"ID":4,"Name":"wookoouk@gmail.com","Badge":"test", "Evidence":"test.com"}]
+[
+{"ID":1,"Name":"wookoouk@gmail.com","Name":"dfgsdfgsd","Badge":1, "Evidence":"test.com", "PointsRequired":10},
+{"ID":2,"Name":"wookoouk@gmail.com","Name":"dfgsdfgsd","Badge":1, "Evidence":"test.com", "PointsRequired":1},
+{"ID":3,"Name":"wookoouk@gmail.com","Name":"dfgsdfgsd","Badge":1, "Evidence":"test.com", "PointsRequired":2},
+{"ID":4,"Name":"wookoouk@gmail.com","Name":"dfgsdfgsd","Badge":1, "Evidence":"test.com", "PointsRequired":5},
+{"ID":5,"Name":"wookoouk@gmail.com","Name":"dfgsdfgsd","Badge":1, "Evidence":"test.com", "PointsRequired":500}
+]

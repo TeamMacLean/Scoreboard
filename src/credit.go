@@ -52,18 +52,19 @@ type Config struct {
 }
 
 type Badge struct {
-	ID       int
-	Name     string
-	Badge    int
-	Evidence string
+	ID             int
+	Name           string
+	Badge          int
+	Evidence       string
+	PointsRequired int
 }
 
 type Card struct {
-	Email    string
-	Badge    int
-	Points   int
-	Required int
-	Given    bool
+	Email  string
+	Badge  int
+	Points int
+	// PointsRequired int
+	Given bool
 }
 
 func DB() martini.Handler {
@@ -88,8 +89,23 @@ func GenerateBadge() {
 func UpdateCard(db *mgo.Database, email string, badge int) Card {
 	card := CardByEmailAndBadge(db, email, badge)
 
+	var currentBadge Badge
+	var realBadge bool = false
+
+	for i := range badges {
+		if badges[i].ID == badge {
+			realBadge = true
+			currentBadge = badges[i]
+		}
+	}
+	if realBadge {
+	} else {
+		print("no such badge")
+		return Card{}
+	}
+
 	if len(card.Email) < 1 {
-		err := db.C(cardsTable).Insert(&Card{email, badge, 0, 100, false})
+		err := db.C(cardsTable).Insert(&Card{email, badge, 0, false})
 		if err != nil {
 			panic(err)
 		}
@@ -104,7 +120,7 @@ func UpdateCard(db *mgo.Database, email string, badge int) Card {
 			panic(err)
 		}
 		card = CardByEmailAndBadge(db, email, badge)
-		if card.Points == card.Required {
+		if card.Points == currentBadge.PointsRequired {
 			query := bson.M{"email": email, "badge": badge}
 			change := bson.M{"$set": bson.M{"given": true}}
 			err := db.C(cardsTable).Update(query, change)
@@ -136,6 +152,16 @@ func GetAllBadges() []Badge {
 	return badges
 }
 
+func GetBadgeByID(badgeID int) Badge {
+	var currentBadge Badge
+	for i := range badges {
+		if badges[i].ID == badgeID {
+			currentBadge = badges[i]
+		}
+	}
+	return currentBadge
+}
+
 func GetCardsByEmail(db *mgo.Database, email string) []Card {
 	var cards []Card
 	err := db.C(cardsTable).Find(bson.M{"Email": email}).All(&cards)
@@ -157,7 +183,11 @@ func LoadConfig() {
 		fmt.Printf("File error: %v\n", err)
 		os.Exit(1)
 	}
-	json.Unmarshal(file, &config)
+	err = json.Unmarshal(file, &config)
+	if err != nil {
+		fmt.Printf("File error: %v\n", err)
+		os.Exit(1)
+	}
 }
 
 func LoadBadges() {
@@ -166,7 +196,16 @@ func LoadBadges() {
 		fmt.Printf("File error: %v\n", err)
 		os.Exit(1)
 	}
-	json.Unmarshal(file, &badges)
+	err = json.Unmarshal(file, &badges)
+	if err != nil {
+		fmt.Printf("File error: %v\n", err)
+		os.Exit(1)
+	}
+
+	if len(badges) < 1 {
+		fmt.Println("could not create badges array")
+		os.Exit(1)
+	}
 }
 
 func main() {
@@ -186,13 +225,20 @@ func main() {
 	m.Get("/badges", func(r render.Render) {
 		r.JSON(200, GetAllBadges())
 	})
+	m.Get("/badges/:id", func(params martini.Params, r render.Render) {
+		badgeID := params["id"]
+		i, err := strconv.Atoi(badgeID)
+		if err != nil {
+			panic(err)
+		}
+		r.JSON(200, GetBadgeByID(i))
+	})
 
 	m.Get("/cards", func(db *mgo.Database, r render.Render) {
 		r.JSON(200, GetAllCards(db))
 	})
 
 	m.Get("/cards/update/:email/:badge", func(params martini.Params, db *mgo.Database, r render.Render) {
-
 		email := params["email"]
 		badge := params["badge"]
 		i, err := strconv.Atoi(badge)
