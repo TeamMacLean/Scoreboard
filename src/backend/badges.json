@@ -1,7 +1,9 @@
 [
-{"ID":1,"Name":"wookoouk@gmail.com","Name":"dfgsdfgsd","Badge":1, "Evidence":"test.com", "PointsRequired":10},
-{"ID":2,"Name":"wookoouk@gmail.com","Name":"dfgsdfgsd","Badge":1, "Evidence":"test.com", "PointsRequired":1},
-{"ID":3,"Name":"wookoouk@gmail.com","Name":"dfgsdfgsd","Badge":1, "Evidence":"test.com", "PointsRequired":2},
-{"ID":4,"Name":"wookoouk@gmail.com","Name":"dfgsdfgsd","Badge":1, "Evidence":"test.com", "PointsRequired":5},
-{"ID":5,"Name":"wookoouk@gmail.com","Name":"dfgsdfgsd","Badge":1, "Evidence":"test.com", "PointsRequired":500}
+{"ID":1,"Name":"dfgsdfgsd","Badge":1, "Evidence":"test.com", "PointsRequired":10},
+{"ID":2,"Name":"dfgsdfgsd","Badge":1, "Evidence":"test.com", "PointsRequired":1},
+{"ID":3,"Name":"dfgsdfgsd","Badge":1, "Evidence":"test.com", "PointsRequired":2},
+{"ID":4,"Name":"dfgsdfgsd","Badge":1, "Evidence":"test.com", "PointsRequired":5},
+{"ID":5,"Name":"Feature Editor","Badge":1, "Evidence":"test.com", "PointsRequired":500},
+{"ID":26,"Name":"Feature Editor","Badge":26, "Evidence":"test.com", "PointsRequired":100},
+{"ID":27,"Name":"Experimentor","Badge":27, "Evidence":"test.com", "PointsRequired":100}
 ]

@@ -5,12 +5,16 @@
 		<script src="cheeves.js"></script>
 	</head>
 	<body>
-	<button id="button">Click me to toggle</Button>
+	<button id="button">Click me to test (DONE)</Button>
+		<br>
+		<button id="button2">Click me to test</Button>
 
 	<script>
 		$('#button').click(function(event) {
-			console.log("TEST");
-			$('#cheeve').toggleClass('hide-right');
+			cheeves.update("http://127.0.0.1:3000", "wookoouk@gmail.com",4);
+		});
+		$('#button2').click(function(event) {
+			cheeves.update("http://127.0.0.1:3000", "wookoouk@gmail.com",5);
 		});
 		</script>
 

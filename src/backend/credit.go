@@ -80,7 +80,29 @@ func DB() martini.Handler {
 	}
 }
 
-func GenerateBadge() {
+func GenerateBadge(recipient string, evidence string, badgeID string) string {
+
+	fullurl := config.BaseUrl + "/api"
+
+	client := &http.Client{}
+	req, err := http.NewRequest("POST", fullurl, nil)
+	if err != nil {
+		return "error 1"
+	}
+	req.Header.Add("Authorization", config.Authorization)
+	req.Header.Add("recipient", recipient)
+	req.Header.Add("evidence", evidence)
+	req.Header.Add("badgeId", badgeID)
+	resp, err := client.Do(req)
+	defer resp.Body.Close()
+	// if resp.StatusCode == 200 { // OK
+	bs, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return "error 2"
+	}
+	return string(bs)
+	// }
+	// return "error 3"
 }
 
 // func Auth(res http.ResponseWriter, req *http.Request) {
@@ -246,6 +268,8 @@ func main() {
 	m.Get("/cards", func(db *mgo.Database, r render.Render) {
 		r.JSON(200, GetAllCards(db))
 	})
+
+	m.Get("/gen", func() string { return GenerateBadge() })
 
 	m.Get("/cards/update/:email/:badge", func(params martini.Params, db *mgo.Database, r render.Render) {
 		email := params["email"]
