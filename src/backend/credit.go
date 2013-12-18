@@ -95,13 +95,13 @@ func GenerateBadge(recipient string, evidence string, badgeID string) string {
 	req.Header.Add("badgeId", badgeID)
 	resp, err := client.Do(req)
 	defer resp.Body.Close()
-	// if resp.StatusCode == 200 { // OK
-	bs, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		return "error 2"
+	if resp.StatusCode == 200 { // OK
+		bs, err := ioutil.ReadAll(resp.Body)
+		if err != nil {
+			return "error 2"
+		}
+		return string(bs)
 	}
-	return string(bs)
-	// }
 	// return "error 3"
 }
 
