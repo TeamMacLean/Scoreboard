@@ -81,9 +81,16 @@ func DB() martini.Handler {
 }
 
 func GenerateBadge() {
-	/*
-		required: recipient, evidence, badgeId
-	*/
+}
+
+// func Auth(res http.ResponseWriter, req *http.Request) {
+// 	if req.Header.Get("X-API-KEY") != "secret123" {
+// 		res.WriteHeader(http.StatusUnauthorized)
+// 	}
+// }
+
+func AccessControlAllowOrigin(res http.ResponseWriter, req *http.Request) {
+	res.Header().Set("Access-Control-Allow-Origin", "*") //tighten this up!
 }
 
 func UpdateCard(db *mgo.Database, email string, badge int) Card {
@@ -217,6 +224,7 @@ func main() {
 	m := martini.Classic()
 	m.Use(render.Renderer())
 	// m.Use(Auth)
+	m.Use(AccessControlAllowOrigin)
 	m.Use(DB())
 
 	m.Get("/", func() string {
