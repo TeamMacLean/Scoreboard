@@ -5,6 +5,7 @@ $(document).ready(function () {
 function deliverCheeve(card, badge){
 
 
+
     $('body').append('<div id="cheeve" class="hide-right"></div>');
     $('#cheeve').append('<div id="left"></div>');
     $('#cheeve').append('<div id="right"></div>');
@@ -14,15 +15,12 @@ function deliverCheeve(card, badge){
     if(card.Points != badge.PointsRequired){
         $('#right').append('<p>'+card.Points+' of '+badge.PointsRequired+'</p>');
     } else {
-        $('#right').append('<p>Edit 4 more features to earn this</p>');
-    }
+        $('#right').append('<h3>Badge unlocked!</h3>');
+        $('#right').append('<a href='+card.Assert+'>Click here to collect</a>');
     
+    }
 
-    $('#cheeve').click(function(event) {
-            $('#cheeve').toggleClass('hide-right');
-            console.log("toggle");
-    });
-
+    
     setTimeout(function(){
         $('#cheeve').toggleClass('hide-right');
     },500);
@@ -33,25 +31,22 @@ function deliverCheeve(card, badge){
                 update: function update(url, email, badge) {
 
                 $('#cheeve').remove();
-                // url = "http://127.0.0.1:3000";
-                // email = "wookoouk@gmail.com";
-                // badge = "5";
 
                 var card = getCard(url, email, badge);
                 var badge = getBadge(url, badge);
 
-                if(card.Given){
+                if(card.Given && card.Assert.length < 1){
+                    console.log(card);
+                    console.log("user already has this badge");
 
-                    alert("You already have this badge");
-
-                } else {deliverCheeve(card, badge);}
+                } else {
+                    deliverCheeve(card, badge);
+                }
             }
         }
 
 
 function getCard(url, email, badge) {
-//        http://127.0.0.1:3000/cards/update/wookoouk@gmail.com/1
-
 var getter = url+"/cards/update/"+email+"/"+badge;
 
     var card;
@@ -65,7 +60,8 @@ var getter = url+"/cards/update/"+email+"/"+badge;
                 Email: data.Email,
                 Badge: data.Badge,
                 Points: data.Points,
-                Given: data.Given
+                Given: data.Given,
+                Assert: data.Assert
             }
         }
     });
@@ -73,8 +69,6 @@ var getter = url+"/cards/update/"+email+"/"+badge;
 }
 
 function getBadge(url, badge) {
-//    http://127.0.0.1:3000/badges/1
-
 var getter = url+"/badges/"+badge;
 
     var badge;

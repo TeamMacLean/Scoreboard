@@ -1,23 +1,5 @@
 package main
 
-// badge [name, merit-badge-id]
-// score card [user(email), badge(badge), points(int), points_required(int), given(bool)]
-
-/*
-PLAN:
- when a user adds an experiment credit is notified with the user and the activity (added an experiment),
- credit checks if the is already a score card for that user+badge, If there is and they have already acheved it,
- the request is taken no further, if they have not yet acheved the badge one point is added. If this brings them up to
- the required amount of points for the badge, a new badge is requested from merit and offered to the user.
-
- The server will only be accessable inside the network.
-*/
-
-/*
-IDEA:
- the user could be notified every time they earn a point (when points_required > 1), like with steme 'cheves'
-*/
-
 import (
 	"encoding/json"
 	"fmt"
@@ -63,8 +45,8 @@ type Card struct {
 	Email  string
 	Badge  int
 	Points int
-	// PointsRequired int
-	Given bool
+	Given  bool
+	Assert string
 }
 
 func DB() martini.Handler {
@@ -80,36 +62,34 @@ func DB() martini.Handler {
 	}
 }
 
-func GenerateBadge(recipient string, evidence string, badgeID string) string {
+func GenerateBadge(recipient string, evidence string, badgeId int) string {
+
+	badge := strconv.Itoa(badgeId)
+
+	fmt.Println("creating badge for " + recipient + " : " + evidence + " : " + badge)
 
 	fullurl := config.BaseUrl + "/api"
 
 	client := &http.Client{}
 	req, err := http.NewRequest("POST", fullurl, nil)
 	if err != nil {
-		return "error 1"
+		return ""
 	}
 	req.Header.Add("Authorization", config.Authorization)
 	req.Header.Add("recipient", recipient)
 	req.Header.Add("evidence", evidence)
-	req.Header.Add("badgeId", badgeID)
+	req.Header.Add("badgeId", badge)
 	resp, err := client.Do(req)
 	defer resp.Body.Close()
 	if resp.StatusCode == 200 { // OK
 		bs, err := ioutil.ReadAll(resp.Body)
 		if err != nil {
-			return "error 2"
+			return ""
 		}
 		return string(bs)
 	}
-	// return "error 3"
+	return ""
 }
-
-// func Auth(res http.ResponseWriter, req *http.Request) {
-// 	if req.Header.Get("X-API-KEY") != "secret123" {
-// 		res.WriteHeader(http.StatusUnauthorized)
-// 	}
-// }
 
 func AccessControlAllowOrigin(res http.ResponseWriter, req *http.Request) {
 	res.Header().Set("Access-Control-Allow-Origin", "*") //tighten this up!
@@ -134,14 +114,24 @@ func UpdateCard(db *mgo.Database, email string, badge int) Card {
 	}
 
 	if len(card.Email) < 1 {
-		err := db.C(cardsTable).Insert(&Card{email, badge, 0, false})
+		err := db.C(cardsTable).Insert(&Card{email, badge, 0, false, ""}) //gen new card
 		if err != nil {
 			panic(err)
 		}
 	}
 
 	if card.Given {
+		if len(card.Assert) > 0 {
+			query := bson.M{"email": email, "badge": badge}
+			change := bson.M{"$set": bson.M{"assert": ""}}
+			err := db.C(cardsTable).Update(query, change)
+			if err != nil {
+				panic(err)
+			}
+		}
+
 	} else {
+
 		query := bson.M{"email": email, "badge": badge}
 		change := bson.M{"$set": bson.M{"points": card.Points + 1}}
 		err := db.C(cardsTable).Update(query, change)
@@ -150,10 +140,20 @@ func UpdateCard(db *mgo.Database, email string, badge int) Card {
 		}
 		card.Points += 1
 		if card.Points == currentBadge.PointsRequired {
+
+			fullBadge := GetBadgeByID(badge)
+
+			// fmt.Println("getting %v", badge)
+			// fmt.Println("badge %v", fullBadge)
+
+			url := GenerateBadge(email, "http://www.google.com", fullBadge.Badge)
+
 			query := bson.M{"email": email, "badge": badge}
-			change := bson.M{"$set": bson.M{"given": true}}
+			change := bson.M{"$set": bson.M{"given": true, "assert": url}}
+			card.Assert = url
 			card.Given = true
 			err := db.C(cardsTable).Update(query, change)
+
 			if err != nil {
 				panic(err)
 			}
@@ -187,6 +187,7 @@ func GetBadgeByID(badgeID int) Badge {
 	for i := range badges {
 		if badges[i].ID == badgeID {
 			currentBadge = badges[i]
+			// fmt.Println("returning badge " + currentBadge.Name)
 		}
 	}
 	return currentBadge
@@ -232,6 +233,10 @@ func LoadBadges() {
 		os.Exit(1)
 	}
 
+	for i := range badges {
+		fmt.Printf("loaded badge: %+v \n", badges[i])
+	}
+
 	if len(badges) < 1 {
 		fmt.Println("could not create badges array")
 		os.Exit(1)
@@ -240,7 +245,10 @@ func LoadBadges() {
 
 func main() {
 
+	fmt.Println("Loading config...")
 	LoadConfig()
+
+	fmt.Println("Loading badge...")
 	LoadBadges()
 
 	m := martini.Classic()
@@ -269,7 +277,7 @@ func main() {
 		r.JSON(200, GetAllCards(db))
 	})
 
-	m.Get("/gen", func() string { return GenerateBadge() })
+	// m.Get("/gen", func() string { return GenerateBadge("wookoouk@gmail.com", "http://www.google.com", "1") })
 
 	m.Get("/cards/update/:email/:badge", func(params martini.Params, db *mgo.Database, r render.Render) {
 		email := params["email"]
@@ -281,5 +289,7 @@ func main() {
 		out := UpdateCard(db, email, i)
 		r.JSON(200, out)
 	})
+
+	fmt.Println("Starting Credit...")
 	m.Run()
 }
