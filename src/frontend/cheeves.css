@@ -22,9 +22,14 @@ img {
 	margin-top: 15px;
 }
 
-#cheeve h2, #cheeve p {
+#cheeve h2, #cheeve h3, #cheeve p, #cheeve a {
 text-align:center
 }
+
+#cheeve a:link {color:#FF0000;}      /* unvisited link */
+#cheeve a:visited {color:#00FF00;}  /* visited link */
+#cheeve a:hover {color:#FF00FF;}  /* mouse over link */
+#cheeve a:active {color:#0000FF;}
 
 #left {
 width: 90px;
