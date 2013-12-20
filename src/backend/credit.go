@@ -88,6 +88,7 @@ func GenerateBadge(recipient string, evidence string, badgeId int) string {
 			fmt.Println("error 2")
 			return ""
 		}
+		fmt.Println("returning %v ", bs)
 		return string(bs)
 	}
 	fmt.Println("error 3")
