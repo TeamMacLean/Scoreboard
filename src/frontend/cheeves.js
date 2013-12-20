@@ -31,7 +31,6 @@ function process(card, badge) {
     $('#cheeve').remove();
 
                 
-
                 if(card.Given && card.Assert.length < 1){
                     console.log(card);
                     console.log("user already has this badge");
