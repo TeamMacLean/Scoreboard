@@ -19,7 +19,8 @@ $.ajax({
         type: "GET",
         dataType:'json',
         async: false,
-        success : function(data) {  
+        success : function(data) {
+            console.log(data);
             image = jQuery.parseJSON( data );
         }
     });
