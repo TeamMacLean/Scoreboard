@@ -9,7 +9,7 @@ function deliverCheeve(card, badge){
     $('body').append('<div id="cheeve" class="hide-right"></div>');
     $('#cheeve').append('<div id="left"></div>');
     $('#cheeve').append('<div id="right"></div>');
-    $('#left').append('<img width="80" height="80" src="image.png" >');
+    $('#left').append('<img width="80" height="80" src="./image.png" >');
     $('#right').append('<h2>'+badge.Name+'</h2>');
 
     if(card.Points != badge.PointsRequired){
