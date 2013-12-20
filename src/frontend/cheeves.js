@@ -44,7 +44,7 @@ function process(card, badge) {
         var cheeves = {
                 manualUpdate: function manualUpdate(card, badge) {
                     process(card, badge);
-                }
+                ,
                 update: function update(url, email, badge) {
                     var card = getCard(url, email, badge);
                     var badge = getBadge(url, badge);
