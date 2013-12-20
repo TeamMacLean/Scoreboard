@@ -12,7 +12,17 @@ function deliverCheeve(card, badge){
 
     console.log(imageURL+badge.Badge+".json");
 
-    image = jQuery.parseJSON( imageURL+badge.Badge+".json" );
+url = imageURL+badge.Badge+".json";
+image = null;
+$.ajax({
+        url : url,
+        type: "GET",
+        dataType:'json',
+        async: false,
+        success : function(data) {  
+            image = jQuery.parseJSON( data );
+        }
+    });
 
     if(image != null){
         $('#left').append('<img width="80" height="80" src="'+image.image+'" >');
