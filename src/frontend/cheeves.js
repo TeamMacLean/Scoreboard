@@ -27,13 +27,10 @@ function deliverCheeve(card, badge){
 
 }
 
-        var cheeves = {
-                update: function update(url, email, badge) {
+function process(card, badge) {
+    $('#cheeve').remove();
 
-                $('#cheeve').remove();
-
-                var card = getCard(url, email, badge);
-                var badge = getBadge(url, badge);
+                
 
                 if(card.Given && card.Assert.length < 1){
                     console.log(card);
@@ -42,6 +39,16 @@ function deliverCheeve(card, badge){
                 } else {
                     deliverCheeve(card, badge);
                 }
+}
+
+        var cheeves = {
+                manualUpdate: function manualUpdate(card, badge) {
+                    process(card, badge);
+                }
+                update: function update(url, email, badge) {
+                    var card = getCard(url, email, badge);
+                    var badge = getBadge(url, badge);
+                    process(card, badge);
             }
         }
 
