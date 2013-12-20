@@ -21,7 +21,7 @@ $.ajax({
         async: false,
         success : function(data) {
             console.log(data);
-            image = jQuery.parseJSON( data );
+            image = data;
         }
     });
 
