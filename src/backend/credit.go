@@ -73,6 +73,7 @@ func GenerateBadge(recipient string, evidence string, badgeId int) string {
 	client := &http.Client{}
 	req, err := http.NewRequest("POST", fullurl, nil)
 	if err != nil {
+		fmt.Println("error 1")
 		return ""
 	}
 	req.Header.Add("Authorization", config.Authorization)
@@ -84,10 +85,12 @@ func GenerateBadge(recipient string, evidence string, badgeId int) string {
 	if resp.StatusCode == 200 { // OK
 		bs, err := ioutil.ReadAll(resp.Body)
 		if err != nil {
+			fmt.Println("error 2")
 			return ""
 		}
 		return string(bs)
 	}
+	fmt.Println("error 3")
 	return ""
 }
 
