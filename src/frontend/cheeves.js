@@ -10,6 +10,8 @@ function deliverCheeve(card, badge){
     $('#cheeve').append('<div id="left"></div>');
     $('#cheeve').append('<div id="right"></div>');
 
+    console.log(imageURL+badge.Badge+".json");
+
     image = jQuery.parseJSON( imageURL+badge.Badge+".json" );
 
     if(image != null){
