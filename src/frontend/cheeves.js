@@ -4,7 +4,7 @@ $(document).ready(function () {
 
 function deliverCheeve(card, badge){
 
-imageURL = "http://merit.tsl.ac.uk/badges/"
+    imageURL = "http://merit.tsl.ac.uk/badges/"
 
     $('body').append('<div id="cheeve" class="hide-right"></div>');
     $('#cheeve').append('<div id="left"></div>');
@@ -12,7 +12,7 @@ imageURL = "http://merit.tsl.ac.uk/badges/"
 
     image = jQuery.parseJSON( imageURL+badge.Badge+".json" );
 
-    if(image != null){}
+    if(image != null){
         $('#left').append('<img width="80" height="80" src="'+image.image+'" >');
     }
  
