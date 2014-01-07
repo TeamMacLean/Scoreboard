@@ -14,4 +14,9 @@ When a message is received on the URL '/cards/update/:email/:badge' Scoreboard w
 Frontend ('Cheeves')
 ======
 
-TODO
+Comming soon...
+
+API Ref
+======
+
+Comming soon...
