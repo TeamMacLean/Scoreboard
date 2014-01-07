@@ -6,12 +6,12 @@ Scoreboard tracks the effort that has been contributed by a user as points, when
 Scoreboard consists of two parts, the front end and the back end.
 The backend is a RESTful web service that accepts POST and GET requests.
 
-Frontend
+Backend
 ======
 
 When a message is received on the URL '/cards/update/:email/:badge' Scoreboard will look for a record (or 'card') with a matching email address and badge id, if one is not found one will be created and one point will be given to it, if a card does exist it will add a point, if the additional point brings the score to the requirement to award the badge it will request a new badge from Merit and return its url in the response.
 
-Backend
+Frontend ('Cheeves')
 ======
 
 TODO
