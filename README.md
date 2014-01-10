@@ -16,7 +16,73 @@ Frontend ('Cheeves')
 
 Comming soon...
 
-API Ref
+Examples
 ======
 
-Comming soon...
+Ruby
+======
+class Badge :
+
+```
+class Badge
+require 'net/http'
+require "rubygems"
+require "json"
+
+
+def self.goGet(url, email, badge)
+
+card = getCard(url, email, badge)
+badge = getBadge(url, badge)
+
+bundle = card + badge
+return bundle
+end
+
+def self.getCard(url, email, badge)
+
+getter = "#{url}/cards/update/#{email}/#{badge}";
+
+uri = URI(getter)
+req = Net::HTTP.get(uri)
+# json = req.to_json
+return req.to_s.html_safe
+end
+
+def self.getBadge(url, badge)
+
+getter = "#{url}/badges/#{badge}";
+
+uri = URI(getter)
+req = Net::HTTP.get(uri)
+# json = req.to_json
+return req.to_s.html_safe
+end
+
+end
+```
+
+main.html.erb
+```
+
+<script src="/Credit/src/frontend/cheeves.js"></script>
+<link href="/Credit/src/frontend/cheeves.css" media="all" rel="stylesheet" type="text/css" />
+
+...
+
+<script>
+    <%unless params[:badge].nil?%>
+        <% if user_signed_in? %>
+            console.log("running cheves");
+
+            <% url = "http://127.0.0.1:3000" %>
+            <% email = current_user.email %>
+            <% badgep = params[:badge] %>
+
+            card = <%= Badge.getCard(url, email, badgep) %>
+            badge = <%= Badge.getBadge(url, badgep) %>
+            cheeves.manualUpdate(card, badge);
+        <% end %>
+    <% end %>
+</script>
+```
