@@ -147,10 +147,7 @@ func UpdateCard(db *mgo.Database, email string, badge int) Card {
 
 			fullBadge := GetBadgeByID(badge)
 
-			// fmt.Println("getting %v", badge)
-			// fmt.Println("badge %v", fullBadge)
-
-			url := GenerateBadge(email, "http://www.google.com", fullBadge.Badge)
+			url := GenerateBadge(email, "http://www.google.com", fullBadge.Badge) //TODO fix the evidence feild
 
 			query := bson.M{"email": email, "badge": badge}
 			change := bson.M{"$set": bson.M{"given": true, "assert": url}}
@@ -191,7 +188,6 @@ func GetBadgeByID(badgeID int) Badge {
 	for i := range badges {
 		if badges[i].ID == badgeID {
 			currentBadge = badges[i]
-			// fmt.Println("returning badge " + currentBadge.Name)
 		}
 	}
 	return currentBadge
@@ -262,7 +258,7 @@ func main() {
 	m.Use(DB())
 
 	m.Get("/", func() string {
-		return "Merry Christmas!"
+		return "Scoreboard is running!"
 	})
 
 	m.Get("/badges", func(r render.Render) {
@@ -280,8 +276,6 @@ func main() {
 	m.Get("/cards", func(db *mgo.Database, r render.Render) {
 		r.JSON(200, GetAllCards(db))
 	})
-
-	// m.Get("/gen", func() string { return GenerateBadge("wookoouk@gmail.com", "http://www.google.com", "1") })
 
 	m.Get("/cards/update/:email/:badge", func(params martini.Params, db *mgo.Database, r render.Render) {
 		email := params["email"]
