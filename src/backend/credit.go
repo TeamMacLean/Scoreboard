@@ -214,7 +214,15 @@ func Auth(res http.ResponseWriter, req *http.Request) {
 
 // load the config.json file, if it does not exits or is not readable the app will exit
 func LoadConfig() {
-	file, err := ioutil.ReadFile("./config.json")
+
+	var inputFile = "./config.json"
+
+	if len(os.Args) == 3 {
+		inputFile = os.Args[1]
+	}
+
+	file, err := ioutil.ReadFile(inputFile)
+
 	if err != nil {
 		fmt.Printf("File error: %v\n", err)
 		os.Exit(1)
@@ -227,7 +235,14 @@ func LoadConfig() {
 }
 
 func LoadBadges() {
-	file, err := ioutil.ReadFile("./badges.json")
+
+	var inputFile = "./badges.json"
+
+	if len(os.Args) == 3 {
+		inputFile = os.Args[2]
+	}
+
+	file, err := ioutil.ReadFile(inputFile)
 	if err != nil {
 		fmt.Printf("File error: %v\n", err)
 		os.Exit(1)
