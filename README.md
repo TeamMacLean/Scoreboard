@@ -6,6 +6,8 @@ Scoreboard tracks the effort that has been contributed by a user as points, when
 Scoreboard consists of two parts, the front end and the back end.
 The backend is a RESTful web service that accepts POST and GET requests.
 
+[![baby-gopher](https://raw2.github.com/drnic/babygopher-site/gh-pages/images/babygopher-badge.png)](http://www.babygopher.org)
+
 Backend
 ======
 
