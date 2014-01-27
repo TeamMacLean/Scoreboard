@@ -219,7 +219,7 @@ func LoadConfig() {
 
 	if len(os.Args) == 3 {
 		inputFile = os.Args[1]
-		fmt.Printf("using %v for config file", inputFile)
+		fmt.Printf("using %v for config file \n", inputFile)
 	}
 
 	file, err := ioutil.ReadFile(inputFile)
@@ -241,7 +241,7 @@ func LoadBadges() {
 
 	if len(os.Args) == 3 {
 		inputFile = os.Args[2]
-		fmt.Printf("using %v for badges file", inputFile)
+		fmt.Printf("using %v for badges file \n", inputFile)
 	}
 
 	file, err := ioutil.ReadFile(inputFile)
