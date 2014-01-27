@@ -95,8 +95,10 @@ func GenerateBadge(recipient string, evidence string, badgeId int) string {
 	return ""
 }
 
+// this is a little hack to allow ajax access to the service
 func AccessControlAllowOrigin(res http.ResponseWriter, req *http.Request) {
 	res.Header().Set("Access-Control-Allow-Origin", "*") //tighten this up!
+	//possibly add an option in the config for url(s) accessing this.
 }
 
 func UpdateCard(db *mgo.Database, email string, badge int) Card {
@@ -179,6 +181,7 @@ func GetAllCards(db *mgo.Database) []Card {
 	return cards
 }
 
+// i cant even remember is this is for anything
 func GetAllBadges() []Badge {
 	return badges
 }
@@ -202,12 +205,14 @@ func GetCardsByEmail(db *mgo.Database, email string) []Card {
 	return cards
 }
 
+// unused by default
 func Auth(res http.ResponseWriter, req *http.Request) {
 	if req.Header.Get("X-API-KEY") != "secret123" {
 		res.WriteHeader(http.StatusUnauthorized)
 	}
 }
 
+// load the config.json file, if it does not exits or is not readable the app will exit
 func LoadConfig() {
 	file, err := ioutil.ReadFile("./config.json")
 	if err != nil {
