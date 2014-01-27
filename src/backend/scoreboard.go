@@ -265,6 +265,8 @@ func LoadBadges() {
 
 func main() {
 
+	fmt.Println("%v\n args", len(os.Args))
+
 	fmt.Println("Loading config...")
 	LoadConfig()
 
