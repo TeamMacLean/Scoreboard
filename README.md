@@ -13,8 +13,9 @@ Backend
 
 Start
 -----
-`go run scoreboard.go` will assume config.json and badges.json are in the same location.
-`go run scoreboard.go /path/to/config.json /path/to/badges.json` will take the full or relative paths to your config.json and badges.json files.
+`go run scoreboard.go` (config.json and badges.json must be in current folder)
+`go run scoreboard.go /path/to/config.json /path/to/badges.json` (full or relative path to config.json and badges.json).
+
 
 When a message is received on the URL '/cards/update/:email/:badge' Scoreboard will look for a record (or 'card') with a matching email address and badge id, if one is not found one will be created and one point will be given to it, if a card does exist it will add a point, if the additional point brings the score to the requirement to award the badge it will request a new badge from Merit and return its url in the response.
 
