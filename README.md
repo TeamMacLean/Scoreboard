@@ -94,3 +94,7 @@ main.html.erb
     <% end %>
 </script>
 ```
+
+
+[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/wookoouk/scoreboard/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
+
